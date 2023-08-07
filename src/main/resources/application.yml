@@ -1,0 +1,40 @@
+
+
+
+server:
+  port: 8080
+
+
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+      - id: authservice
+        uri: lb://AUTHSERVICE
+        predicates:
+        - Path=/auth/**
+      - id: exampleService
+        uri: lb://EXAMPLESERVICE
+        predicates:
+        - Path=/example/**
+        filters:
+        - AuthenticationFilter
+      - id: customerservice
+        uri: lb://CUSTOMERSERVICE
+        predicates:
+        - Path=/customer/**
+        filters:
+        - AuthenticationFilter
+          
+          
+          
+  application:
+    name: gateway
+eureka:
+  client:
+    service-url:
+      default-zone: http://localhost:8761/eureka
+      
