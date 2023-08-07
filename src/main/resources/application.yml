@@ -16,6 +16,13 @@ spring:
         uri: lb://AUTHSERVICE
         predicates:
         - Path=/auth/**
+      - id: exampleService
+        uri: lb://EXAMPLESERVICE
+        predicates:
+        - Path=/example/**
+        filters:
+        - AuthenticationFilter
+          
           
   application:
     name: gateway
