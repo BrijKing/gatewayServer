@@ -1,9 +1,18 @@
-
-
-
 server:
   port: 8080
-
+  
+#
+#spring:
+#  cloud:
+#    gateway:
+#      globalcors:
+#        cors-configurations:
+#          "[0]":
+#            allowed-origins: "http://localhost:3000"
+#            allowed-methods: "GET,POST,PUT,DELETE"
+#            allowed-headers: "*"
+#            allow-credentials: true
+  
 
 spring:
   cloud:
@@ -12,29 +21,32 @@ spring:
         locator:
           enabled: true
       routes:
-      - id: authservice
-        uri: lb://AUTHSERVICE
-        predicates:
-        - Path=/auth/**
-      - id: exampleService
-        uri: lb://EXAMPLESERVICE
-        predicates:
-        - Path=/example/**
-        filters:
-        - AuthenticationFilter
-      - id: customerservice
-        uri: lb://CUSTOMERSERVICE
-        predicates:
-        - Path=/customer/**
-        filters:
-        - AuthenticationFilter
-          
-          
-          
+        - id: authservice
+          uri: lb://AUTHSERVICE
+          predicates:
+            - Path=/auth/**
+        - id: exampleService
+          uri: lb://EXAMPLESERVICE
+          predicates:
+            - Path=/example/**
+          filters:
+            - AuthenticationFilter
+        - id: customerservice
+          uri: lb://CUSTOMERSERVICE
+          predicates:
+            - Path=/customer/**
+          filters:
+            - AuthenticationFilter
+      globalcors:
+        cors-configurations:
+         "[/**]":
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "Content-Type,Authorization"
+        
   application:
     name: gateway
 eureka:
   client:
     service-url:
       default-zone: http://localhost:8761/eureka
-      
