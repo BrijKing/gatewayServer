@@ -37,6 +37,12 @@ spring:
             - Path=/customer/**
           filters:
             - AuthenticationFilter
+        - id: authservice
+          uri: lb://AUTHSERVICE
+          predicates:
+            - Path=/employee/**
+          filters:
+            - AuthenticationFilter
       globalcors:
         cors-configurations:
          "[/**]":
