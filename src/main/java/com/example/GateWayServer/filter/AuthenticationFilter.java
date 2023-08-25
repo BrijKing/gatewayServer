@@ -8,6 +8,7 @@ import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFac
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 
@@ -36,6 +37,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
 	@Override
 	public GatewayFilter apply(Config config) {
 		return ((exchange, chain) -> {
+			ServerHttpRequest request = null;
 			if (validator.isSecured.test(exchange.getRequest())) {
 				// header contains token or not
 				if (!exchange.getRequest().getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
@@ -53,6 +55,8 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
 				try {
 
 					jwtUtil.validateToken(authHeader);
+					
+					request = exchange.getRequest().mutate().header("loggedInUser", jwtUtil.extractUsername(authHeader).getSubject()).build();
 
 				} catch (ExpiredJwtException e) {
 
@@ -62,6 +66,8 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
 							.getBytes(StandardCharsets.UTF_8);
 					DataBuffer buffer = response.bufferFactory().wrap(responseBytes);
 					return response.writeWith(Mono.just(buffer));
+					
+					
 				}
 
 				catch (Exception e) {
@@ -73,7 +79,9 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
 					return response.writeWith(Mono.just(buffer));
 				}
 			}
-			return chain.filter(exchange);
+			
+			
+			return chain.filter(exchange.mutate().request(request).build());
 		});
 	}
 
