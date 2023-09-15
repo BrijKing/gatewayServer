@@ -25,10 +25,10 @@ spring:
           uri: lb://AUTHSERVICE
           predicates:
             - Path=/auth/**
-        - id: exampleService
-          uri: lb://EXAMPLESERVICE
+        - id: shopService
+          uri: lb://SHOP-SERVICE
           predicates:
-            - Path=/example/**
+            - Path=/shop/**
           filters:
             - AuthenticationFilter
         - id: customerservice
